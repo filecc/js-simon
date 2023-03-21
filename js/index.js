@@ -10,47 +10,69 @@ function start() {
   let userNums = [];
   let numGuess = [];
   let seconds = 0;
+  let points = 0;
 
   const start = document.querySelector(".start");
   const send = document.querySelector(".send");
-  const reset = document.querySelector(".reset");
+  
 
-  const buttonsActions = [start, send, reset];
+  const buttonsActions = [start, send];
+
+  
 
   const handleClickAction = function () {
     if (this.classList.contains("send")) {
-       handleSend();
-        this.disabled = true;
+      handleSend();
     } else if (this.classList.contains("start")) {
       this.removeEventListener("click", handleClickAction);
       this.disabled = true;
-      timerContainer.classList.remove("d-none");
-      generateRadomPcNumbers(level);
-      pcNums.forEach((number) => {
-        pcNumsContainer.append(
-          createChild("div", '', ["pcNums", "shadow-sm", `_${number}`], number)
-        );
-      });
-      const progress = setInterval(countdown, 1000);
+      starting();
+    }
+  };
+  
+  const progress = () => setInterval(countdown, 1000);
+  function countdown() {
+    timeLeft.classList.toggle("animated");
+    if (seconds > 30) {
+        timeLeft.classList.add("d-none");
+        timeLeft.style.fontSize = '0';
+        displayUserNumber();
+        timerContainer.style.width = `0%)`;
+        clearInterval(progress);
+      }
+    if (seconds > 20) {
+      timerContainer.style.background =
+        "linear-gradient(#cd1332 0%, #ba7dbe 100%)";
+    }
+    timerContainer.style.width = `calc(97% - ${seconds * 3.33}%)`;
+    if (seconds > 25) {
+      timeLeft.classList.remove("d-none");
+      timeLeft.innerHTML = 30 - seconds + 1;
+      timeLeft.addEventListener("animationend", () =>
+        timeLeft.classList.remove("animated")
+      );
+    }
+    seconds++;
+  }
+  
+  const timeLeft = document.getElementById("timeRunning");
       document
         .getElementById("clear")
         .addEventListener("click", () => (seconds = 30));
-      function countdown() {
-        if (seconds > 30) {
-          displayUserNumber();
-          timerContainer.style.width = `0%)`;
-          clearInterval(progress);
-        }
-        if (seconds > 20) {
-          timerContainer.style.background = "red";
-        }
-        timerContainer.style.width = `calc(97% - ${seconds * 3.33}%)`;
-        seconds++;
-      }
-    } else {
-      console.log("Reset");
-    }
-  };
+
+  function starting(){
+    pcNumsContainer.innerHTML = '';
+    userNumsContainer.innerHTML = '';
+    timerContainer.classList.remove("d-none");
+      generateRadomPcNumbers(level);
+      pcNums.forEach((number) => {
+        pcNumsContainer.append(
+          createChild("div", "", ["pcNums", "shadow-sm", `_${number}`], number)
+        );
+      });
+      console.log(pcNums)
+      progress();
+  }
 
   buttonsActions.forEach((button) => {
     button.addEventListener("click", handleClickAction);
@@ -60,12 +82,11 @@ function start() {
     if (numGuess.length < pcNums.length) {
       numGuess.push(parseInt(this.innerText));
       this.disabled = true;
-      console.log(numGuess);
     }
   };
 
-  const timeToGuess = setInterval(guessed, 100);
-
+  const timeToGuess = () => setInterval(guessed, 100);
+  timeToGuess();
   function guessed() {
     if (numGuess.length > 0 && numGuess.length === pcNums.length) {
       send.disabled = false;
@@ -74,17 +95,19 @@ function start() {
         element.removeEventListener("click", userGuess);
       });
       clearInterval(timeToGuess);
+    } else {
+        send.disabled = true;
     }
   }
 
   function displayUserNumber() {
+    userNums = [];
     generateRandomUserNumber(level);
     userNums.forEach((number) => {
       userNumsContainer.append(
         createChild("button", number, ["userNums", "btn", "shadow-sm"], number)
       );
     });
-    console.log(userNums);
     const userButtons = document.querySelectorAll(".userNums");
     const pcNumsDivs = document.querySelectorAll(".pcNums");
     pcNumsDivs.forEach((element) => {
@@ -97,33 +120,65 @@ function start() {
   }
 
   function handleSend() {
+    timeToGuess();
     let id = pcNums.length - 1;
-   function showNumber () {
-    if (id < 0){
+    function showNumber() {
+      if (id < 0) {
         clearInterval(showNumber);
-    } else {
+      } else {
         const arraySortedPc = pcNums.sort();
         const arraySortedUser = numGuess.sort();
-        document.querySelector(`._${arraySortedPc[id]}`).classList.remove('blurred');
-        console.log(arraySortedPc[id]);
-       
-        if (arraySortedUser.includes(arraySortedPc[id])){
-            document.getElementById(arraySortedPc[id]).classList.add('success');
-            document.getElementById(`${arraySortedPc[id]}`).classList.add('gold');
+        document
+          .querySelector(`._${arraySortedPc[id]}`)
+          .classList.remove("blurred");
+        if (arraySortedUser.includes(arraySortedPc[id])) {
+          document.getElementById(arraySortedPc[id]).classList.add("success");
+          points += 1;
         } else {
-            document.getElementById(arraySortedPc[id]).classList.add('fail');
-           
+          document.getElementById(arraySortedPc[id]).classList.add("fail");
+        }
+        if (points === pcNums.length) {
+            youWin();
+        } 
+        console.log(id)
+        if (points < pcNums.length && id === 0){
+            youLose();
         }
         id--;
-        
+
+      }
     }
-   }
-   setInterval(showNumber, 2000);
+    setInterval(showNumber, 2000);
+    
+  }
+
+  function youWin(){
+    resultContainer.append(createChild('p', '', ['resultP', 'text-success', 'fw-bold', 'fs-2'], `You WIN! You now have ${points} points.`));
+    resultContainer.append(createChild('button', 'next', ['btn', 'btn-success'], 'Next Level'));
+    document.getElementById('next').addEventListener('click', handleNext);
+  }
+
+  function handleNext() {
+    level++;
+    document.getElementById('level').innerHTML = `Level: ${level}`
+    resultContainer.innerHTML = '';
+    pcNums.length = 0;
+    userNums.length = 0;
+    numGuess.length = 0;
+    seconds = 0;
+    starting();
+
+  }
+
+  function youLose(){
+    resultContainer.append(createChild('p', '', ['resultP', 'text-danger', 'fw-bold', 'fs-2'], 'You Lose.'));
+    level = 1;
   }
 
   /* FUNCTIONS */
   function generateRadomPcNumbers(howMany) {
-    while (pcNums.length < howMany + 4) {
+    pcNums = [];
+    while (pcNums.length < howMany + 2) {
       const newNumber = getRandomInt(1, 100);
       if (!pcNums.includes(newNumber)) {
         pcNums.push(newNumber);
@@ -151,7 +206,6 @@ function start() {
     userNums = shuffle;
   }
 
-  function resetAll() {}
 }
 
 start();
