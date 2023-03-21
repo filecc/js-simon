@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simon Says</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+  <link rel="stylesheet" href="./css/master.css">
+  <script src="./js/utility.js"></script>
+</head>
+
+<body>
+  <main>
+    <div class="w-100 h-100 container d-flex flex-column justify-content-center text-center align-items-center gap-2">
+      <h1>Simon Says:</h1>
+      <div class="row w-100">
+        <div class="col-12 col-md-8 col-lg-5 p-1 mx-auto">
+          <div id="pcNumbers" class="d-flex flex-wrap w-100 justify-content-center align-items-center gap-2">
+            
+          </div>
+        </div>
+      </div>
+
+      <div class="row w-100">
+        <div class="col-12 col-md-8 col-lg-5 p-1 mx-auto">
+          <div id="userNumbers" class="d-flex flex-wrap w-100 justify-content-center align-items-center gap-2 d-none">
+            <p class="d-block w-100 fw-bold">What Simon said?</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row w-100">
+        <div class="col-12 col-md-8 col-lg-5 p-1 mx-auto">
+          <div id="timer" class="flex flex-wrap d-none"></div>
+        </div>
+      </div>
+
+      <div class="row w-100">
+        <div class="col-12 col-md-8 col-lg-5 bg-body-tertiary p-1 mx-auto">
+          <button class="btn btn-success send" disabled>Send</button>
+          <button class="btn btn-primary mx-3 start">Start</button>
+          <button class="btn btn-danger reset">Reset</button>
+          <button id="clear">Clear</button>
+        </div>
+      </div>
+      <div class="row w-100">
+        <div class="result-12 col-md-8 col-lg-5 bg-body-tertiary p-1 mx-auto">
+          <div id="result" class="flex flex-wrap w-100">
+            result
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </main>
+
+  <script src="./js/index.js"></script>
+</body>
+
+</html>
