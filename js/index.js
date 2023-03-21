@@ -19,7 +19,8 @@ function start() {
 
   const handleClickAction = function () {
     if (this.classList.contains("send")) {
-      console.log("Send");
+       handleSend();
+        this.disabled = true;
     } else if (this.classList.contains("start")) {
       this.removeEventListener("click", handleClickAction);
       this.disabled = true;
@@ -27,7 +28,7 @@ function start() {
       generateRadomPcNumbers(level);
       pcNums.forEach((number) => {
         pcNumsContainer.append(
-          createChild("div", '', ["pcNums", "shadow-sm"], number)
+          createChild("div", '', ["pcNums", "shadow-sm", `_${number}`], number)
         );
       });
       const progress = setInterval(countdown, 1000);
@@ -93,6 +94,31 @@ function start() {
     userButtons.forEach((element) => {
       element.addEventListener("click", userGuess, { once: true });
     });
+  }
+
+  function handleSend() {
+    let id = pcNums.length - 1;
+   function showNumber () {
+    if (id < 0){
+        clearInterval(showNumber);
+    } else {
+        const arraySortedPc = pcNums.sort();
+        const arraySortedUser = numGuess.sort();
+        document.querySelector(`._${arraySortedPc[id]}`).classList.remove('blurred');
+        console.log(arraySortedPc[id]);
+       
+        if (arraySortedUser.includes(arraySortedPc[id])){
+            document.getElementById(arraySortedPc[id]).classList.add('success');
+            document.getElementById(`${arraySortedPc[id]}`).classList.add('gold');
+        } else {
+            document.getElementById(arraySortedPc[id]).classList.add('fail');
+           
+        }
+        id--;
+        
+    }
+   }
+   setInterval(showNumber, 2000);
   }
 
   /* FUNCTIONS */

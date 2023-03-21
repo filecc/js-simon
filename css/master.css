@@ -41,7 +41,15 @@ main {
     background: #a09f9f;
     color:white;
 }
-
+.userNums.success:disabled{
+    background-color:green;
+}
+.userNums.fail:disabled{
+    background-color:red;
+}
+.gold{
+    background-color: gold;
+}
 #timer{
     width: 100%;
     height: 4px;
