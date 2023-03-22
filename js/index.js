@@ -11,6 +11,9 @@ function start() {
   let numGuess = [];
   let seconds = 0;
   let points = 0;
+  let intervalID;
+  let showNumberIntID;
+  let id;
 
   const start = document.querySelector(".start");
   const send = document.querySelector(".send");
@@ -29,8 +32,9 @@ function start() {
       starting();
     }
   };
-  
-  const progress = () => setInterval(countdown, 1000);
+
+  const progress = () => {intervalID = setInterval(countdown, 1000)};
+
   function countdown() {
     timeLeft.classList.toggle("animated");
     if (seconds > 30) {
@@ -38,7 +42,7 @@ function start() {
         timeLeft.style.fontSize = '0';
         displayUserNumber();
         timerContainer.style.width = `0%)`;
-        clearInterval(progress);
+        clearInterval(intervalID);
       }
     if (seconds > 20) {
       timerContainer.style.background =
@@ -56,11 +60,17 @@ function start() {
   }
   
   const timeLeft = document.getElementById("timeRunning");
+
       document
         .getElementById("clear")
         .addEventListener("click", () => (seconds = 30));
 
+        const timeToGuess = () => setInterval(guessed, 100);
+
   function starting(){
+    id = pcNums.length - 1;
+    timerContainer.style.width = `100%)`;
+    clearInterval(intervalID);
     pcNumsContainer.innerHTML = '';
     userNumsContainer.innerHTML = '';
     timerContainer.classList.remove("d-none");
@@ -72,6 +82,8 @@ function start() {
       });
       console.log(pcNums)
       progress();
+     
+        timeToGuess();
   }
 
   buttonsActions.forEach((button) => {
@@ -85,8 +97,6 @@ function start() {
     }
   };
 
-  const timeToGuess = () => setInterval(guessed, 100);
-  timeToGuess();
   function guessed() {
     if (numGuess.length > 0 && numGuess.length === pcNums.length) {
       send.disabled = false;
@@ -119,12 +129,19 @@ function start() {
     });
   }
 
+  
   function handleSend() {
+    id = pcNums.length - 1;
     timeToGuess();
-    let id = pcNums.length - 1;
+    showNumberIntID = () => {
+        setInterval(showNumber, 2000);
+      }
     function showNumber() {
       if (id < 0) {
-        clearInterval(showNumber);
+        if (points === pcNums.length) {
+            youWin();
+        } 
+        clearInterval(showNumberIntID);
       } else {
         const arraySortedPc = pcNums.sort();
         const arraySortedUser = numGuess.sort();
@@ -137,9 +154,7 @@ function start() {
         } else {
           document.getElementById(arraySortedPc[id]).classList.add("fail");
         }
-        if (points === pcNums.length) {
-            youWin();
-        } 
+        
         console.log(id)
         if (points < pcNums.length && id === 0){
             youLose();
@@ -148,7 +163,7 @@ function start() {
 
       }
     }
-    setInterval(showNumber, 2000);
+    showNumberIntID();
     
   }
 
@@ -166,6 +181,8 @@ function start() {
     userNums.length = 0;
     numGuess.length = 0;
     seconds = 0;
+    clearInterval(intervalID);
+    clearInterval(showNumberIntID);
     starting();
 
   }
