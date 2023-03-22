@@ -4,6 +4,7 @@ function start() {
   const userNumsContainer = document.getElementById("userNumbers");
   const timerContainer = document.getElementById("timer");
   const resultContainer = document.getElementById("result");
+  const whatSaid = document.querySelector('.whatSaid');
 
   let level = 1;
   let pcNums = [];
@@ -43,7 +44,7 @@ function start() {
       timerContainer.style.background =
         "linear-gradient(#cd1332 0%, #ba7dbe 100%)";
     }
-    if (seconds > 25) {
+    if (seconds > 24) {
       timeLeft.classList.remove("d-none");
       timeLeft.innerHTML = 30 - seconds + 1;
       timeLeft.addEventListener("animationend", () =>
@@ -62,19 +63,14 @@ function start() {
   }
   
   const timeLeft = document.getElementById("timeRunning");
-
-      document
-        .getElementById("clear")
-        .addEventListener("click", () => (seconds = 30));
-
         const timeToGuess = () => setInterval(guessed, 100);
 
   function starting(){
-    timerContainer.style.width = `100%)`;
     clearInterval(intervalID);
     pcNumsContainer.innerHTML = '';
     userNumsContainer.innerHTML = '';
     timerContainer.classList.remove("d-none");
+    timerContainer.style = ``;
       generateRadomPcNumbers(level);
       id = pcNums.length - 1;
       pcNums.forEach((number) => {
@@ -112,6 +108,7 @@ function start() {
   }
 
   function displayUserNumber() {
+    whatSaid.classList.remove('d-none');
     userNums = [];
     generateRandomUserNumber(level);
     userNums.forEach((number) => {
@@ -166,6 +163,7 @@ function start() {
       }
     }
     if (!win && id >= 0 && numGuess.length === pcNums.length) {
+      send.disabled = true;
       timeToGuess();
       showNumberIntID();
     }
@@ -184,6 +182,7 @@ function start() {
   }
 
   function handleNext() {
+    whatSaid.classList.add('d-none');
     win = false;
     level++;
     pcNums.length = 0;
@@ -199,6 +198,7 @@ function start() {
 
   function youLose(){
     resultContainer.append(createChild('p', '', ['resultP', 'text-danger', 'fw-bold', 'fs-2'], 'You Lose.'));
+    resultContainer.append(createChild('p', '', ['resultP', 'text-danger', 'fw-bold', 'fs-2'], `Total score: ${total}`));
     level = 1;
     clearInterval(showNumberIntID);
   }
