@@ -8,7 +8,7 @@ const setAppHeight = () => {
 window.addEventListener('resize', setAppHeight);
 setAppHeight();
 
-/* Creates a new HTML element with the specified tag name, classes and text content */
+/* Creates a new HTML element with the specified tag name, id,  classes and text content */
 function createChild(tagName, id, classes, text) {
   const newElement = document.createElement(tagName);
   newElement.innerHTML = text;
@@ -27,3 +27,5 @@ function addClasses(element, classes) {
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
+
+

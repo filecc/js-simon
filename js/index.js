@@ -11,17 +11,17 @@ function start() {
   let numGuess = [];
   let seconds = 0;
   let points = 0;
+  let total = 0;
   let intervalID;
   let showNumberIntID;
   let id;
+  let win = false;
 
   const start = document.querySelector(".start");
   const send = document.querySelector(".send");
   
 
   const buttonsActions = [start, send];
-
-  
 
   const handleClickAction = function () {
     if (this.classList.contains("send")) {
@@ -33,28 +33,30 @@ function start() {
     }
   };
 
-  const progress = () => {intervalID = setInterval(countdown, 1000)};
+  const progress = () => intervalID = setInterval(countdown, 1000);
 
   function countdown() {
-    timeLeft.classList.toggle("animated");
-    if (seconds > 30) {
-        timeLeft.classList.add("d-none");
-        timeLeft.style.fontSize = '0';
-        displayUserNumber();
-        timerContainer.style.width = `0%)`;
-        clearInterval(intervalID);
-      }
+    console.log('seconds from countdown: ' + seconds);
+    timerContainer.style.width = `calc(97% - ${seconds * 3.33}%)`;
     if (seconds > 20) {
+      timeLeft.classList.toggle("animated");
       timerContainer.style.background =
         "linear-gradient(#cd1332 0%, #ba7dbe 100%)";
     }
-    timerContainer.style.width = `calc(97% - ${seconds * 3.33}%)`;
     if (seconds > 25) {
       timeLeft.classList.remove("d-none");
       timeLeft.innerHTML = 30 - seconds + 1;
       timeLeft.addEventListener("animationend", () =>
         timeLeft.classList.remove("animated")
       );
+    }
+    if (seconds > 30) {
+      timeLeft.classList.add("d-none");
+      timerContainer.style.width = `100%)`
+      timeLeft.classList.remove("animated");
+      timeLeft.style.fontSize = '0';
+      displayUserNumber();
+      clearInterval(intervalID);
     }
     seconds++;
   }
@@ -68,13 +70,13 @@ function start() {
         const timeToGuess = () => setInterval(guessed, 100);
 
   function starting(){
-    id = pcNums.length - 1;
     timerContainer.style.width = `100%)`;
     clearInterval(intervalID);
     pcNumsContainer.innerHTML = '';
     userNumsContainer.innerHTML = '';
     timerContainer.classList.remove("d-none");
       generateRadomPcNumbers(level);
+      id = pcNums.length - 1;
       pcNums.forEach((number) => {
         pcNumsContainer.append(
           createChild("div", "", ["pcNums", "shadow-sm", `_${number}`], number)
@@ -82,8 +84,7 @@ function start() {
       });
       console.log(pcNums)
       progress();
-     
-        timeToGuess();
+      timeToGuess();
   }
 
   buttonsActions.forEach((button) => {
@@ -132,17 +133,16 @@ function start() {
   
   function handleSend() {
     id = pcNums.length - 1;
-    timeToGuess();
     showNumberIntID = () => {
         setInterval(showNumber, 2000);
       }
     function showNumber() {
-      if (id < 0) {
-        if (points === pcNums.length) {
+      if (id < 0 && !win && points === pcNums.length) {
+            total += points;
             youWin();
-        } 
-        clearInterval(showNumberIntID);
-      } else {
+            clearInterval(showNumberIntID);
+            clearInterval(id);
+      } else if (id >= 0 && !win && numGuess.length === pcNums.length) {
         const arraySortedPc = pcNums.sort();
         const arraySortedUser = numGuess.sort();
         document
@@ -150,7 +150,7 @@ function start() {
           .classList.remove("blurred");
         if (arraySortedUser.includes(arraySortedPc[id])) {
           document.getElementById(arraySortedPc[id]).classList.add("success");
-          points += 1;
+          points++;
         } else {
           document.getElementById(arraySortedPc[id]).classList.add("fail");
         }
@@ -158,29 +158,39 @@ function start() {
         console.log(id)
         if (points < pcNums.length && id === 0){
             youLose();
+            clearInterval(showNumberIntID);
+            clearInterval(timeToGuess);
         }
         id--;
 
       }
     }
-    showNumberIntID();
+    if (!win && id >= 0 && numGuess.length === pcNums.length) {
+      timeToGuess();
+      showNumberIntID();
+    }
+   
     
   }
 
   function youWin(){
-    resultContainer.append(createChild('p', '', ['resultP', 'text-success', 'fw-bold', 'fs-2'], `You WIN! You now have ${points} points.`));
+    win = true;
+    points = 0;
+    numGuess.length = 0;
+    clearInterval(showNumberIntID);
+    resultContainer.append(createChild('p', '', ['resultP', 'text-success', 'fw-bold', 'fs-2'], `You WIN! You now have ${total} points.`));
     resultContainer.append(createChild('button', 'next', ['btn', 'btn-success'], 'Next Level'));
     document.getElementById('next').addEventListener('click', handleNext);
   }
 
   function handleNext() {
+    win = false;
     level++;
-    document.getElementById('level').innerHTML = `Level: ${level}`
-    resultContainer.innerHTML = '';
     pcNums.length = 0;
     userNums.length = 0;
-    numGuess.length = 0;
     seconds = 0;
+    document.getElementById('level').innerHTML = `Level: ${level}`
+    resultContainer.innerHTML = '';
     clearInterval(intervalID);
     clearInterval(showNumberIntID);
     starting();
@@ -190,6 +200,7 @@ function start() {
   function youLose(){
     resultContainer.append(createChild('p', '', ['resultP', 'text-danger', 'fw-bold', 'fs-2'], 'You Lose.'));
     level = 1;
+    clearInterval(showNumberIntID);
   }
 
   /* FUNCTIONS */
